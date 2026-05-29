@@ -18,10 +18,13 @@ jobs:
       run: npm install
     - name: Build XPI
       run: npx zp-zipup src batch-obsidian-export .gitkeep
+    - name: List XPI files
+      run: ls -la xpi/
     - name: Upload XPI as Release Asset
       uses: softprops/action-gh-release@v2
       with:
         files: xpi/*.xpi
         generate_release_notes: true
+        fail_on_unmatched_files: true
       env:
         GITHUB_TOKEN: ${{ github.token }}
