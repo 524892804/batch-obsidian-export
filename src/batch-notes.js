@@ -237,7 +237,7 @@ var BatchNotes = {
 
 		// P0: Direct mode fallback for failures
 		if (!zotlitSuccess && failedItems.length > 0) {
-			let vault = this._pref("vault-path");
+			let vault = this._pref("vaultPath");
 			if (vault) {
 				let retry = win.confirm(
 					"ZotLit 导出了 " + (total - failedItems.length) + "/" + total + " 篇。\n" +
@@ -260,7 +260,7 @@ var BatchNotes = {
 
 		// Direct as primary mode
 		if ((mode === "direct" || (mode === "auto" && !this._zotlitAvailable())) && !zotlitSuccess) {
-			let vault = this._pref("vault-path");
+			let vault = this._pref("vaultPath");
 			if (vault) {
 				await this._exportDirect(items, win);
 			} else if (this._zotlitAvailable()) {
