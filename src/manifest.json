@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Batch Notes to Obsidian",
+  "author": "Di xiaoan",
+  "version": "1.0.0",
+  "description": "Batch-export selected Zotero items to Obsidian. Supports ZotLit URL chunks and direct file write.",
+  "homepage_url": "https://github.com/524892804/batch-obsidian-export",
+  "icons": {
+    "48": "content/icon.svg",
+    "96": "content/icon.svg"
+  },
+  "applications": {
+    "zotero": {
+      "id": "batch-obsidian-export@524892804.github.io",
+      "update_url": "https://github.com/524892804/batch-obsidian-export/releases/download/release/updates.json",
+      "strict_min_version": "6.999",
+      "strict_max_version": "9999.*"
+    }
+  }
+}

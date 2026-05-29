@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <link rel="stylesheet" href="chrome://zotero/content/preferences.css" type="text/css"/>
+  <script src="chrome://batch-obsidian/content/batch-obsidian-prefs.js"/>
+</head>
+<body>
+  <hbox align="center">
+    <label control="export-mode" value="Export Mode"/>
+    <menulist id="export-mode" preference="extensions.batch-obsidian-export.exportMode">
+      <menupopup>
+        <menuitem label="ZotLit URL" value="zotlit"/>
+        <menuitem label="Direct File Write" value="direct"/>
+      </menupopup>
+    </menulist>
+  </hbox>
+  <groupbox>
+    <caption label="Vault Settings"/>
+    <hbox align="center">
+      <label control="vault-path" value="Vault Path (optional for Direct)"/>
+      <textbox id="vault-path" preference="extensions.batch-obsidian-export.vaultPath"/>
+    </hbox>
+    <hbox align="center">
+      <label control="conflict-action" value="Conflict Resolution"/>
+      <menulist id="conflict-action" preference="extensions.batch-obsidian-export.conflictAction">
+        <menupopup>
+          <menuitem label="Overwrite" value="overwrite"/>
+          <menuitem label="Skip" value="skip"/>
+          <menuitem label="Append" value="append"/>
+        </menupopup>
+      </menulist>
+    </hbox>
+    <hbox align="center">
+      <label control="chunk-size" value="Chunk Size"/>
+      <textbox id="chunk-size" type="number" preference="extensions.batch-obsidian-export.chunkSize" min="1" max="50"/>
+    </hbox>
+    <hbox align="center">
+      <label control="chunk-delay" value="Chunk Delay (ms)"/>
+      <textbox id="chunk-delay" type="number" preference="extensions.batch-obsidian-export.chunkDelay" min="100" max="5000"/>
+    </hbox>
+  </groupbox>
+</body>
+</html>

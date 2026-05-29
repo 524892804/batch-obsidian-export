@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "batch-obsidian-export@524892804.github.io": {
+      "updates": [
+        {
+          "version": "1.0.0",
+          "update_link": "https://github.com/524892804/batch-obsidian-export/releases/download/v1.0.0/batch-obsidian-export-1.0.0.xpi"
+        }
+      ]
+    }
+  }
+}

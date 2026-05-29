@@ -1,0 +1,22 @@
+{
+  "name": "batch-obsidian-export",
+  "version": "1.0.0",
+  "description": "Zotero 7 plugin: Batch export items to Obsidian",
+  "main": "src/bootstrap.js",
+  "scripts": {
+    "build": "zp-zipup src batch-obsidian-export .gitkeep",
+    "release": "zp-release",
+    "postversion": "git push --follow-tags"
+  },
+  "author": "Di xiaoan <524892804@qq.com>",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "zotero-plugin": "^9.0.1"
+  },
+  "zotero-plugin": {
+    "id": "batch-obsidian-export@524892804.github.io",
+    "update_url": "https://github.com/524892804/batch-obsidian-export/releases/download/release/updates.json",
+    "release_manifest_url": "https://github.com/524892804/batch-obsidian-export/releases/download/release/updates.json",
+    "xpi_name": "batch-obsidian-export-{version}.xpi"
+  }
+}
