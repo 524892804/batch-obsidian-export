@@ -2,6 +2,8 @@ name: Release
 
 on:
   push:
+    tags:
+      - 'v*'
 
 jobs:
   release:
@@ -15,8 +17,11 @@ jobs:
     - name: Install dependencies
       run: npm install
     - name: Build XPI
-      run: npm run build
-    - name: Release
-      run: npm run release
+      run: npx zp-zipup src batch-obsidian-export .gitkeep
+    - name: Upload XPI as Release Asset
+      uses: softprops/action-gh-release@v2
+      with:
+        files: xpi/*.xpi
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ github.token }}
