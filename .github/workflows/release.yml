@@ -23,6 +23,7 @@ jobs:
       with:
         files: xpi/*.xpi
         generate_release_notes: true
-        fail_on_unmatched_files: true
+        token: ${{ secrets.PAT }}
       env:
         GITHUB_TOKEN: ${{ secrets.PAT }}
+
