@@ -21,78 +21,10 @@ var BatchNotes = {
 		this._rootURI = rootURI;
 		this._initialized = true;
 		this.log("initialized v" + version);
-
-		// P1: Fix Translate for Zotero startup race condition
-		this._fixTranslatePlugin();
 	},
 
 	log(msg) {
 		Zotero.debug("BatchNotes: " + msg);
-	},
-
-	/* ── P1: Fix Translate for Zotero ─────────── */
-
-	_fixTranslatePlugin() {
-		try {
-			// Check if Translate's hook exists but is disconnected
-			if (typeof Zotero.PDFTranslate !== "undefined" &&
-			    Zotero.PDFTranslate.hooks &&
-			    typeof Zotero.PDFTranslate.hooks.onMainWindowLoad === "function") {
-
-				this.log("Translate plugin detected, re-hooking reader windows");
-
-				// Re-apply hook to all open windows
-				for (let win of Zotero.getMainWindows()) {
-					try {
-						Zotero.PDFTranslate.hooks.onMainWindowLoad(win);
-					} catch (e) {
-						this.log("Translate re-hook window error: " + e.message);
-					}
-				}
-
-				// Also patch ZotLit's reader hook to preserve Translate's hook
-				this._patchReaderToPreserveTranslate();
-				this.log("Translate fix applied");
-			} else {
-				this.log("Translate not detected or no hooks available");
-			}
-		} catch (e) {
-			this.log("Translate fix error: " + e.message);
-		}
-	},
-
-	_patchReaderToPreserveTranslate() {
-		// ZotLit replaces Reader.prototype._initIframeWindow
-		// We wrap it so Translate's hook survives
-		try {
-			let Reader = Zotero.Reader;
-			if (!Reader || !Reader.prototype) return;
-
-			let origInit = Reader.prototype._initIframeWindow;
-			if (!origInit) return;
-
-			let self = this;
-			Reader.prototype._initIframeWindow = async function() {
-				let result = await origInit.apply(this, arguments);
-				// After ZotLit's init completes, re-fire Translate's hook
-				try {
-					if (typeof Zotero.PDFTranslate !== "undefined" &&
-					    Zotero.PDFTranslate.hooks &&
-					    typeof Zotero.PDFTranslate.hooks.onMainWindowLoad === "function") {
-						let mainWin = Zotero.getMainWindows()[0];
-						if (mainWin) {
-							Zotero.PDFTranslate.hooks.onMainWindowLoad(mainWin);
-						}
-					}
-				} catch (e) {
-					self.log("Post-init Translate re-hook: " + e.message);
-				}
-				return result;
-			};
-			this.log("Reader patched to preserve Translate hooks");
-		} catch (e) {
-			this.log("Reader patch error: " + e.message);
-		}
 	},
 
 	/* ── Window Management ─────────────────────── */
@@ -121,12 +53,12 @@ var BatchNotes = {
 			// Fallback: add standalone menu item
 			if (doc.getElementById("batch-obsidian-menuitem")) return;
 
-			let sep = doc.createElement("menuseparator");
+			let sep = doc.createXULElement("menuseparator");
 			sep.id = "batch-obsidian-sep-fallback";
 			menu.appendChild(sep);
 			this._addedIDs.push(sep.id);
 
-			let mi = doc.createElement("menuitem");
+			let mi = doc.createXULElement("menuitem");
 			mi.id = "batch-obsidian-menuitem";
 			mi.setAttribute("label", "Batch Export to Obsidian\u2026");
 			mi.addEventListener("command", () => this.doBatchExport(win));
@@ -160,13 +92,13 @@ var BatchNotes = {
 			}
 
 			// Add separator inside ZotLit's submenu
-			let sep = doc.createElement("menuseparator");
+			let sep = doc.createXULElement("menuseparator");
 			sep.id = "batch-obsidian-sep";
 			targetPopup.appendChild(sep);
 			this._addedIDs.push(sep.id);
 
 			// Add our menu item inside ZotLit's submenu
-			let mi = doc.createElement("menuitem");
+			let mi = doc.createXULElement("menuitem");
 			mi.id = "batch-obsidian-menuitem";
 			mi.setAttribute("label", "Batch Export All to Obsidian\u2026");
 			mi.addEventListener("command", () => this.doBatchExport(win));
