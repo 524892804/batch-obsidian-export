@@ -7,62 +7,64 @@ function log(msg) {
     Zotero.debug("Batch Notes: " + msg);
 }
 
-function install() {
+function install(data, reason) {
     log("Installed");
 }
 
-async function startup({ id, version, resourceURI, rootURI }) {
-    await Zotero.initializationPromise;
-
-    if (!rootURI) {
-        rootURI = resourceURI.spec;
-    }
-
+function startup({ id, version, resourceURI, rootURI }, reason) {
     log("Starting " + version + " from " + rootURI);
 
-    // Register chrome for prefs.xhtml chrome:// URL
-    try {
-        var aomStartup = Components.classes[
-            "@mozilla.org/addons/addon-manager-startup;1"
-        ].getService(Components.interfaces.amIAddonManagerStartup);
-        var manifestURI = Services.io.newURI(rootURI + "manifest.json");
-        chromeHandle = aomStartup.registerChrome(manifestURI, [
-            ["content", "batch-obsidian", rootURI + "content/"],
-        ]);
-    } catch (e) {
-        log("Chrome registration failed: " + e.message);
-    }
+    return (async () => {
+        await Zotero.initializationPromise;
 
-    // Load main plugin code
-    Services.scriptloader.loadSubScript(rootURI + "batch-notes.js");
-    BatchNotes.init({ id, version, rootURI });
-    BatchNotes.addToAllWindows();
-
-    // Listen for windows opened after startup
-    winListener = {
-        observe: function (win, topic, data) {
-            if (topic === "domwindowopened") {
-                win.addEventListener("load", function () {
-                    if (win.ZoteroPane) {
-                        BatchNotes.addToWindow(win);
-                    } else {
-                        var ci = win.setInterval(function () {
-                            if (win.ZoteroPane) {
-                                win.clearInterval(ci);
-                                BatchNotes.addToWindow(win);
-                            }
-                        }, 200);
-                    }
-                }, { once: true });
-            }
+        if (!rootURI) {
+            rootURI = resourceURI.spec;
         }
-    };
-    Services.ww.registerNotification(winListener);
 
-    log("Startup complete");
+        // Register chrome for prefs.xhtml chrome:// URL
+        try {
+            var aomStartup = Components.classes[
+                "@mozilla.org/addons/addon-manager-startup;1"
+            ].getService(Components.interfaces.amIAddonManagerStartup);
+            var manifestURI = Services.io.newURI(rootURI + "manifest.json");
+            chromeHandle = aomStartup.registerChrome(manifestURI, [
+                ["content", "batch-obsidian", rootURI + "content/"],
+            ]);
+        } catch (e) {
+            log("Chrome registration failed: " + e.message);
+        }
+
+        // Load main plugin code
+        Services.scriptloader.loadSubScript(rootURI + "batch-notes.js");
+        BatchNotes.init({ id, version, rootURI });
+        BatchNotes.addToAllWindows();
+
+        // Listen for windows opened after startup
+        winListener = {
+            observe: function (win, topic, data) {
+                if (topic === "domwindowopened") {
+                    win.addEventListener("load", function () {
+                        if (win.ZoteroPane) {
+                            BatchNotes.addToWindow(win);
+                        } else {
+                            var ci = win.setInterval(function () {
+                                if (win.ZoteroPane) {
+                                    win.clearInterval(ci);
+                                    BatchNotes.addToWindow(win);
+                                }
+                            }, 200);
+                        }
+                    }, { once: true });
+                }
+            }
+        };
+        Services.ww.registerNotification(winListener);
+
+        log("Startup complete");
+    })();
 }
 
-function shutdown() {
+function shutdown({ id, version, resourceURI, rootURI }, reason) {
     log("Shutting down");
 
     // Unregister window listener
@@ -85,6 +87,6 @@ function shutdown() {
     BatchNotes = undefined;
 }
 
-function uninstall() {
+function uninstall(data, reason) {
     log("Uninstalled");
 }
