@@ -11,7 +11,6 @@
 var BatchNotes = {
 	_initialized: false,
 	_addedIDs: [],
-	_windows: [],
 
 	/* ── Lifecycle ─────────────────────────────── */
 
@@ -200,7 +199,7 @@ var BatchNotes = {
 
 	_pref(key) {
 		try {
-			return Zotero.Prefs.get("extensions.batch-obsidian." + key, true);
+			return Zotero.Prefs.get("extensions.batch-obsidian-export." + key, true);
 		} catch (e) {
 			return null;
 		}
@@ -225,7 +224,7 @@ var BatchNotes = {
 			return;
 		}
 
-		let mode = this._pref("export-mode") || "auto";
+		let mode = this._pref("exportMode") || "auto";
 
 		// P0: Try ZotLit first, capture results for fallback
 		let zotlitSuccess = false;
@@ -316,7 +315,7 @@ var BatchNotes = {
 		pw.changeHeadline("Export via ZotLit (0/" + total + ")");
 		pw.show();
 
-		let chunkSize = parseInt(this._pref("chunk-size") || "15", 10);
+		let chunkSize = parseInt(this._pref("chunkSize") || "15", 10);
 		if (chunkSize < 1) chunkSize = 15;
 		if (chunkSize > 50) chunkSize = 50;
 
@@ -401,9 +400,9 @@ var BatchNotes = {
 
 	async _exportDirect(items, win) {
 		let total = items.length;
-		let vaultPath = this._pref("vault-path");
-		let notesDir = this._pref("notes-dir") || "02-Reading/mdnotes";
-		let conflictMode = this._pref("conflict-mode") || "skip";
+		let vaultPath = this._pref("vaultPath");
+		let notesDir = this._pref("notesDir") || "02-Reading/mdnotes";
+		let conflictMode = this._pref("conflictAction") || "overwrite";
 
 		let outDir = vaultPath.replace(/\\$/, "") + "/" +
 			notesDir.replace(/\\/g, "/").replace(/^\/|\/$/g, "");
@@ -517,10 +516,10 @@ var BatchNotes = {
 	},
 
 	async _renderItem(item) {
-		let templatePath = this._pref("template-path");
+		let templatePath = this._pref("templatePath");
 		if (templatePath) {
 			try {
-				let vaultPath = this._pref("vault-path");
+				let vaultPath = this._pref("vaultPath");
 				let fullPath = vaultPath.replace(/\\$/, "") + "/" +
 					templatePath.replace(/^\/+/, "");
 				let file = new FileUtils.File(fullPath);
@@ -705,36 +704,5 @@ var BatchNotes = {
 		} catch (e) {
 			return "";
 		}
-	},
-
-	/* ── Window management (for bootstrapped startup) ── */
-
-	addToAllWindows() {
-		var windows = Zotero.getMainWindows();
-		for (let win of windows) {
-			this.addToWindow(win);
-		}
-	},
-
-	addToWindow(window) {
-		if (!window || !window.document) return;
-		if (this._windows.indexOf(window) !== -1) return;
-		this._windows.push(window);
-		this.log("added to window");
-	},
-
-	removeFromWindow(window) {
-		var idx = this._windows.indexOf(window);
-		if (idx !== -1) {
-			this._windows.splice(idx, 1);
-		}
-	},
-
-	removeFromAllWindows() {
-		this._windows = [];
-	},
-
-	main() {
-		this.log("main");
 	}
 };

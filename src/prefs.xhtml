@@ -9,6 +9,7 @@
     <label control="export-mode" value="Export Mode"/>
     <menulist id="export-mode" preference="extensions.batch-obsidian-export.exportMode">
       <menupopup>
+        <menuitem label="Auto (try ZotLit, fallback Direct)" value="auto"/>
         <menuitem label="ZotLit URL" value="zotlit"/>
         <menuitem label="Direct File Write" value="direct"/>
       </menupopup>
@@ -19,6 +20,14 @@
     <hbox align="center">
       <label control="vault-path" value="Vault Path (optional for Direct)"/>
       <textbox id="vault-path" preference="extensions.batch-obsidian-export.vaultPath"/>
+    </hbox>
+    <hbox align="center">
+      <label control="notes-dir" value="Notes subdirectory"/>
+      <textbox id="notes-dir" preference="extensions.batch-obsidian-export.notesDir"/>
+    </hbox>
+    <hbox align="center">
+      <label control="template-path" value="Template path (relative)"/>
+      <textbox id="template-path" preference="extensions.batch-obsidian-export.templatePath"/>
     </hbox>
     <hbox align="center">
       <label control="conflict-action" value="Conflict Resolution"/>

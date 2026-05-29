@@ -17,7 +17,6 @@ async function startup({ id, version, rootURI }) {
     Services.scriptloader.loadSubScript(rootURI + "batch-notes.js");
     BatchNotes.init({ id, version, rootURI });
     BatchNotes.addToAllWindows();
-    await BatchNotes.main();
 }
 
 function onMainWindowLoad({ window }) {
