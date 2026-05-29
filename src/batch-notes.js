@@ -241,47 +241,37 @@ var BatchNotes = {
 
 	async _exportViaZotLit(items, win) {
 		let total = items.length;
-		this.log("Exporting " + total + " items via ZotLit URL scheme");
+		this.log("Exporting " + total + " items via ZotLit (one per URL)");
 
 		let pw = new Zotero.ProgressWindow({ closeOnClick: true });
 		pw.changeHeadline("Export via ZotLit (0/" + total + ")");
 		pw.show();
 
-		let chunkSize = parseInt(this._pref("chunkSize") || "15", 10);
-		if (chunkSize < 1) chunkSize = 15;
-		if (chunkSize > 50) chunkSize = 50;
-
-		let chunks = [];
-		for (let i = 0; i < items.length; i += chunkSize) {
-			chunks.push(items.slice(i, i + chunkSize));
-		}
-
 		let sent = 0;
 		let failedItems = [];
 
-		for (let ci = 0; ci < chunks.length; ci++) {
-			let chunk = chunks[ci];
-
+		for (let i = 0; i < total; i++) {
 			try {
-				let encoded = chunk.map(item => this._encodeItem(item));
-				let url = this._buildZotLitUrl("export", encoded);
+				let item = items[i];
+				let encoded = this._encodeItem(item);
+				let url = this._buildZotLitUrl("export", [encoded]);
 
-				// Log URL length for debugging
-				this.log("Chunk " + (ci + 1) + " URL length: " + url.length + " chars");
+				this.log("Item " + (i + 1) + "/" + total + " URL length: " + url.length + " chars");
 
 				Zotero.launchURL(url);
-				sent += chunk.length;
+				sent++;
 
 				let line = pw.addProgressLine(
-					"Chunk " + (ci + 1) + "/" + chunks.length +
-					" (" + sent + "/" + total + " sent)"
+					"[" + (i + 1) + "/" + total + "] " +
+					(item.getField("title") || item.key).substring(0, 40)
 				);
 				pw.updateLine(line);
 
-				await this._sleep(500); // Give Obsidian URL handler time
+				// Wait between items so Obsidian can process each one
+				await this._sleep(800);
 			} catch (e) {
-				this.log("Chunk " + ci + " error: " + e.message);
-				failedItems.push(...chunk);
+				this.log("Item " + i + " error: " + e.message);
+				failedItems.push(items[i]);
 			}
 		}
 
